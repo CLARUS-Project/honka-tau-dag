@@ -2,8 +2,8 @@ name: Sync Submodule
 
 env:
     username: 'clarus_user' # The user provided by the platform administrator
-    dag: 'filling_time_training_dag' # The name of the DAG in the template is the name of the function with the @dag before it.
-                      # You can specify more than 1 by separating the names with a space.
+    dag: 'filling_time_training_dag'      # The name of the DAG in the template is the name of the function with the @dag before it.
+                           # You can specify more than 1 by separating the names with a space.
 
 on:
     push:
@@ -27,4 +27,4 @@ jobs:
                   propagate_failure: true
                   trigger_workflow: true
                   wait_workflow: true
-                  client_payload: '{"submodule":"https://github.com/${{  github.repository  }}.git","submodule_path":"${{  github.repository  }}","branch":"${{  github.ref_name  }}","username":"${{ env.username }}","dag":"${{ env.dag }}"}'
+                  client_payload: '{"submodule":"https://${{  github.repository_owner  }}:${{  secrets.ACCESS_TOKEN  }}@github.com/${{  github.repository }}.git","submodule_path":"${{  github.repository  }}","branch":"${{ github.ref_name  }}","username":"${{ env.username }}","dag":"${{ env.dag }}"}'
