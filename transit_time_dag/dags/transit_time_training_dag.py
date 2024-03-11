@@ -26,9 +26,9 @@ from airflow.models import Variable
     schedule_interval='* 12 * * *', 
     start_date=datetime.now(),
     catchup=False,
-    tags=['integ', 'filling_time'],
+    tags=['integ', 'transit_time'],
 ) 
-def filling_time_training_dag():
+def transit_time_training_dag():
 
     env_vars={
         "POSTGRES_USERNAME": Variable.get("POSTGRES_USERNAME"),
@@ -58,7 +58,7 @@ def filling_time_training_dag():
     init_container = k8s.V1Container(
         name="git-clone",
         image="alpine/git:latest",
-        command=["sh", "-c", "mkdir -p /git && cd /git && git clone -b main --single-branch https://github.com/CLARUS-Project/honka-tau-dag"],
+        command=["sh", "-c", "mkdir -p /git && cd /git && git clone -b transit_time --single-branch https://github.com/CLARUS-Project/honka-tau-dag"],
         volume_mounts=init_container_volume_mounts
     )
 
@@ -80,7 +80,7 @@ def filling_time_training_dag():
         import uuid
         import pickle
 
-        sys.path.insert(1, '/git/honka-tau-dag/src/filling_time_pred_src')
+        sys.path.insert(1, '/git/honka-tau-dag/src/transit_time_pred_src')
         from Data.read_data import read_data
         from Process.data_processing import data_processing
 
@@ -116,7 +116,7 @@ def filling_time_training_dag():
         import redis
         import pickle
 
-        sys.path.insert(1, '/git/honka-tau-dag/src/filling_time_pred_src')
+        sys.path.insert(1, '/git/honka-tau-dag/src/transit_time_pred_src')
         from Models.model_training import model_training
 
         redis_client = redis.StrictRedis(
@@ -128,6 +128,35 @@ def filling_time_training_dag():
         data = redis_client.get('data-' + read_id)
         res = pickle.loads(data)
         return model_training(res)
+
+    @task.kubernetes(
+        image='clarusproject/dag-image:1.0.0-slim',
+        name='model_training_vote_task',
+        task_id='model_training_vote_task',
+        namespace='airflow',
+        get_logs=True,
+        init_containers=[init_container],
+        volumes=[volume],
+        volume_mounts=[volume_mount],
+        env_vars=env_vars
+    )
+    def model_training_vote_task(read_id=None):
+        import sys
+        import redis
+        import pickle
+
+        sys.path.insert(1, '/git/honka-tau-dag/src/transit_time_pred_src')
+        from Models.model_training_voting_reg import model_training_vote
+
+        redis_client = redis.StrictRedis(
+            host='redis-headless.redis.svc.cluster.local',
+            port=6379,  # El puerto por defecto de Redis
+            password='pass'
+        )
+
+        data = redis_client.get('data-' + read_id)
+        res = pickle.loads(data)
+        return model_training_vote(res)
 
     @task.kubernetes(
         image='clarusproject/dag-image:1.0.0-slim',
@@ -146,7 +175,7 @@ def filling_time_training_dag():
         import redis
         import pickle
 
-        sys.path.insert(1, '/git/honka-tau-dag/src/filling_time_pred_src')
+        sys.path.insert(1, '/git/honka-tau-dag/src/transit_time_pred_src')
         from Models.model_training_extra_trees import model_training_et
 
         redis_client = redis.StrictRedis(
@@ -176,7 +205,7 @@ def filling_time_training_dag():
         import redis
         import sys
 
-        sys.path.insert(1, '/git/honka-tau-dag/src/filling_time_pred_src')
+        sys.path.insert(1, '/git/honka-tau-dag/src/transit_time_pred_src')
         from Deployment.select_best_model import select_best_model
 
         redis_client = redis.StrictRedis(
@@ -203,7 +232,7 @@ def filling_time_training_dag():
     def register_experiment_task(best_model_res):
         import sys
 
-        sys.path.insert(1, '/git/honka-tau-dag/src/filling_time_pred_src')
+        sys.path.insert(1, '/git/honka-tau-dag/src/transit_time_pred_src')
         from Deployment.register_experiment import register_experiment
 
         return register_experiment(best_model_res)
@@ -213,11 +242,12 @@ def filling_time_training_dag():
     processing_result = read_data_procces_task()
     model_training_result_rf = model_training_rf_task(processing_result)
     model_training_result_et = model_training_task_et(processing_result)
+    model_training_result_vote = model_training_vote_task(processing_result)
     select_best_model_result = select_best_model_task(processing_result)
     register_experiment_result = register_experiment_task(select_best_model_result)
 
     # Define the order of the pipeline
-    processing_result >> [model_training_result_rf, model_training_result_et] >> select_best_model_result >> register_experiment_result
+    processing_result >> [model_training_result_rf, model_training_result_et,model_training_result_vote] >> select_best_model_result >> register_experiment_result
 
 # Call the DAG 
-filling_time_training_dag()
+transit_time_training_dag()

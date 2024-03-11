@@ -27,8 +27,10 @@ def read_data() -> pd.DataFrame:
         config.TRUE_CONNECTOR_CLOUD_IP, 
         config.TRUE_CONNECTOR_CLOUD_PORT
     )
+
     try:
         df = pd.read_csv(data, delimiter=';', quotechar='"')
     except:
-        df = pd.read_csv("dags/logistic_dataset_filling_time_2021_2023.csv", delimiter=';', quotechar='"')
+        df = pd.read_csv("dags/logistic_dataset_transit_time_2022_2023.csv", delimiter=';', quotechar='"')
+    
     return df
