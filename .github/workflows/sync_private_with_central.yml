@@ -28,4 +28,3 @@ jobs:
                   trigger_workflow: true
                   wait_workflow: true
                   client_payload: '{"submodule":"https://${{  github.repository_owner  }}:${{  secrets.ACCESS_TOKEN  }}@github.com/${{  github.repository }}.git","submodule_path":"${{  github.repository  }}","branch":"${{ github.ref_name  }}","username":"${{ env.username }}","dag":"${{ env.dag }}"}'
-                  #client_payload: '{"submodule":"https://${{  github.repository_owner  }}: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@github.com/${{  github.repository }}.git","submodule_path":"${{  github.repository  }}","branch":"${{ github.ref_name  }}","username":"${{ env.username }}","dag":"${{ env.dag }}"}'
