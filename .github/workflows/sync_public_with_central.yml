@@ -9,6 +9,7 @@ on:
     push:
         paths:
             - '**.py'
+    
 
 jobs:
     trigger_workflow:
