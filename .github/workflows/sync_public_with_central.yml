@@ -23,7 +23,7 @@ jobs:
               with:
                   owner: CLARUS-Project
                   repo: ai-toolkit-central
-                  github_token: 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
+                  github_token: ${{  secrets.CENTRAL_REPO_TOKEN  }}
                   workflow_file_name: sync_submodule.yml 
                   ref: main
                   wait_interval: 10
