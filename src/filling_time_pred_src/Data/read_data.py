@@ -18,6 +18,9 @@ def read_data() -> pd.DataFrame:
     Return:
         A Pandas DataFrame representing the content of the specified file.
     """
+    import os
+    cwd = os.getcwd()
+    print(cwd)
     try:
         ids_consumer = RestIDSConsumerConnector()
         data = ids_consumer.get_external_artifact_by_resource_title(
@@ -30,5 +33,5 @@ def read_data() -> pd.DataFrame:
 
         df = pd.read_csv(data, delimiter=';', quotechar='"')
     except:
-        df = pd.read_csv("dags/logistic_dataset_filling_time_2021_2023.csv", delimiter=';', quotechar='"')
+        df = pd.read_csv("logistic_dataset_filling_time_2021_2023.csv", delimiter=';', quotechar='"')
     return df
