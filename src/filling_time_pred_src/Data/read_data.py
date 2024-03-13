@@ -21,17 +21,15 @@ def read_data() -> pd.DataFrame:
     import os
     cwd = os.getcwd()
     print("current_directory: ", cwd)
-    try:
-        ids_consumer = RestIDSConsumerConnector()
-        data = ids_consumer.get_external_artifact_by_resource_title(
-            config.MLFLOW_EXPERIMENT,
-            config.TRUE_CONNECTOR_EDGE_IP,
-            config.TRUE_CONNECTOR_EDGE_PORT,
-            config.TRUE_CONNECTOR_CLOUD_IP,
-            config.TRUE_CONNECTOR_CLOUD_PORT
-        )
+    ids_consumer = RestIDSConsumerConnector()
+    data = ids_consumer.get_external_artifact_by_resource_title(
+        config.MLFLOW_EXPERIMENT,
+        config.TRUE_CONNECTOR_EDGE_IP,
+        config.TRUE_CONNECTOR_EDGE_PORT,
+        config.TRUE_CONNECTOR_CLOUD_IP,
+        config.TRUE_CONNECTOR_CLOUD_PORT
+    )
 
-        df = pd.read_csv(data, delimiter=';', quotechar='"')
-    except:
-        df = pd.read_csv("/git/honka-tau-dag/src/transit_time_pred_src/Data/logistic_dataset_filling_time_2021_2023.csv", delimiter=';', quotechar='"')
+    df = pd.read_csv(data, delimiter=';', quotechar='"')
+
     return df

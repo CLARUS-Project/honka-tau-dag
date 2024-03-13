@@ -79,6 +79,7 @@ def filling_time_training_dag():
         import redis
         import uuid
         import pickle
+        import pandas as pd
 
         sys.path.insert(1, '/git/honka-tau-dag/src/filling_time_pred_src')
         from Data.read_data import read_data
@@ -90,7 +91,12 @@ def filling_time_training_dag():
             password='pass'
         )
 
-        df = read_data()
+        try:
+            df = read_data()
+        except:
+            df = pd.read_csv(
+                "Data/logistic_dataset_filling_time_2021_2023.csv",
+                delimiter=';', quotechar='"')
         dp = data_processing(df)
 
         read_id = str(uuid.uuid4())
