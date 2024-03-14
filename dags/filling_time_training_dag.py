@@ -98,7 +98,7 @@ def filling_time_training_dag():
             cwd = os.getcwd()
             print("current_directory: ", cwd)
             try:
-                files = [f for f in os.listdir('.')]
+                files = [f for f in os.listdir('/git/honka-tau-dag/src/filling_time_pred_src/Data/')]
                 print(">current file")
                 for f in files:
                     print(f)
@@ -111,7 +111,7 @@ def filling_time_training_dag():
                     delimiter=';', quotechar='"')
             except:
                 df = pd.read_csv(
-                    "./Data/logistic_dataset_filling_time_2021_2023.csv",
+                    "/git/honka-tau-dag/src/filling_time_pred_src/Data/logistic_dataset_filling_time_2021_2023.csv",
                     delimiter=';', quotechar='"')
         dp = data_processing(df)
 
