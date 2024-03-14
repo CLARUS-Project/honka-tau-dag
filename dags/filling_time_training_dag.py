@@ -94,9 +94,24 @@ def filling_time_training_dag():
         try:
             df = read_data()
         except:
-            df = pd.read_csv(
-                "Data/logistic_dataset_filling_time_2021_2023.csv",
-                delimiter=';', quotechar='"')
+            cwd = os.getcwd()
+            print("current_directory: ", cwd)
+            try:
+                files = [f for f in os.listdir('.') if os.path.isfile(f)]
+                print(">current file")
+                for f in files:
+                    print(f)
+                print(">file list over")
+            except:
+                pass
+            try:
+                df = pd.read_csv(
+                    "Data/logistic_dataset_filling_time_2021_2023.csv",
+                    delimiter=';', quotechar='"')
+            except:
+                df = pd.read_csv(
+                    "./Data/logistic_dataset_filling_time_2021_2023.csv",
+                    delimiter=';', quotechar='"')
         dp = data_processing(df)
 
         read_id = str(uuid.uuid4())
