@@ -80,6 +80,7 @@ def filling_time_training_dag():
         import uuid
         import pickle
         import pandas as pd
+        import os
 
         sys.path.insert(1, '/git/honka-tau-dag/src/filling_time_pred_src')
         from Data.read_data import read_data
