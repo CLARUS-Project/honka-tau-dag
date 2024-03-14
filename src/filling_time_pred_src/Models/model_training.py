@@ -10,6 +10,7 @@ different scripts and included in the Process directory.
 from typing import Dict, Any
 from sklearn.linear_model import ElasticNet
 from datetime import datetime
+import sklearn as skl
 from Models import utils
 from sklearn.ensemble import RandomForestRegressor, RandomForestClassifier
 #import tensorflow
@@ -21,6 +22,8 @@ from urllib.parse import urlparse
 import numpy as np
 import config
 from mlflow.tracking.client import MlflowClient
+import time
+print(">current version of sklearn: ", skl.__version__)
 def model_training(data: Dict[str, Any]):
     """
     Args:
