@@ -98,7 +98,7 @@ def filling_time_training_dag():
             cwd = os.getcwd()
             print("current_directory: ", cwd)
             try:
-                files = [f for f in os.listdir('.') if os.path.isfile(f)]
+                files = [f for f in os.listdir('.')]
                 print(">current file")
                 for f in files:
                     print(f)
