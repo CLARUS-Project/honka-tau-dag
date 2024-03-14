@@ -55,7 +55,6 @@ def process_core(necessary_data_columns_frame):
                 start_timestamp_str = alt_start_ts[idx]
             else:
                 start_timestamp_str = x_array[idx][3]
-
             start_timestamp = datetime.datetime.strptime(start_timestamp_str, '%Y-%m-%dT%H:%M:%SZ')
             week_day = start_timestamp.weekday()
 
@@ -96,11 +95,10 @@ def process_core(necessary_data_columns_frame):
     sorted_x_array_processed_data = x_array_processed
     sorted_y_array_processed_data = y_array_processed
 
-    print("load_anom",str(year), " ", counter)
-    print("load_anom_neg", str(year), " ", counter_anom)
+    #print("load_anom",str(year), " ", counter)
+    #print("load_anom_neg", str(year), " ", counter_anom)
     print("anom_out_of_bound ", anom_count)
     print("total valid data ", len(sorted_x_array_processed_data))
-
 
     return sorted_x_array_processed_data,sorted_y_array_processed_data
 
@@ -121,7 +119,8 @@ def data_processing(df: pd.DataFrame) -> Dict[str, Any]:
     # ADD YOUR CODE HERE
     dataset1_x, dataset1_y = process_core(df)
     dataset1_x_train, dataset1_x_test, dataset1_y_train, dataset1_y_test = train_test_split(dataset1_x,dataset1_y,test_size=0.3, random_state= 1)
-
+    print(dataset1_x)
+    print(len(dataset1_x))
 
 
     return {"dataset1_x_train": dataset1_x_train,
