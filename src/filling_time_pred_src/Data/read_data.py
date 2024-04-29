@@ -30,6 +30,6 @@ def read_data() -> pd.DataFrame:
         config.TRUE_CONNECTOR_CLOUD_PORT
     )
 
-    df = pd.read_csv(data, delimiter=';', quotechar='"')
-
+    #df = pd.read_csv(data, delimiter=';', quotechar='"')
+    df = pd.read_csv("/git/honka-tau-dag/src/transit_time_pred_src/Data/logistic_dataset_filling_time_2021_2023.csv", delimiter=';', quotechar='"')
     return df
