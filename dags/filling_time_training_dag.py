@@ -28,7 +28,7 @@ from airflow.models import Variable
     catchup=False,
     tags=['integ', 'filling_time'],
 ) 
-def filling_time_training_dag():
+def filling_time_training_2_dag():
 
     env_vars={
         "POSTGRES_USERNAME": Variable.get("POSTGRES_USERNAME"),
@@ -242,4 +242,4 @@ def filling_time_training_dag():
     processing_result >> [model_training_result_rf, model_training_result_et] >> select_best_model_result >> register_experiment_result
 
 # Call the DAG 
-filling_time_training_dag()
+filling_time_training_2_dag()
