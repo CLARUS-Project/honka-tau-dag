@@ -59,6 +59,7 @@ def filling_time_training_dag():
         name="git-clone",
         image="alpine/git:latest",
         command=["sh", "-c", "mkdir -p /git && cd /git && git clone -b main --single-branch https://github.com/CLARUS-Project/honka-tau-dag"],
+        #command=["sh", "-c", "mkdir -p /git && cd /git && git clone -b main --single-branch https://<repo_owner>:<project_token>@github.com/CLARUS-Project/honka-tau-dag"],
         volume_mounts=init_container_volume_mounts
     )
 

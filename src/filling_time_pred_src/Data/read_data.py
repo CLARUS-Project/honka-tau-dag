@@ -1,35 +1,46 @@
-"""
-This module provides the read_data function, which is utilized by the pipeline orchestrator (Airflow) for data ingestion. 
-The function implements the logic to ingest the data and transform it into a pandas format. If any additional auxiliary 
-functions are required to accomplish this step, they can be defined within the same script or separated into different 
-scripts and included in the Data directory.
-"""
-
 import pandas as pd
-from IDS_templates.rest_ids_consumer_connector import RestIDSConsumerConnector
+from io import StringIO
+from ids_read.ids_agent_client  import IDSAgentClient
 import config
 
 def read_data() -> pd.DataFrame:
+
     """
     The function implements the logic to ingest the data and transform it into a pandas format.
 
-    In this code example, a csv file is retrieved from a url.
+    In this code example, a csv file is retrieved from a datasource.
+    If not using IDS add your own code to read the datasource
+    If using IDS uncomment the example code and replace <<Dataset Provider IP>> with the IP of the dataset provider partipant
 
     Return:
         A Pandas DataFrame representing the content of the specified file.
     """
-    import os
-    cwd = os.getcwd()
-    print("current_directory: ", cwd)
-    ids_consumer = RestIDSConsumerConnector()
-    data = ids_consumer.get_external_artifact_by_resource_title(
-        config.MLFLOW_EXPERIMENT,
-        config.TRUE_CONNECTOR_EDGE_IP,
-        config.TRUE_CONNECTOR_EDGE_PORT,
-        config.TRUE_CONNECTOR_CLOUD_IP,
-        config.TRUE_CONNECTOR_CLOUD_PORT
-    )
+    try:
 
-    #df = pd.read_csv(data, delimiter=';', quotechar='"')
-    df = pd.read_csv("/git/honka-tau-dag/src/transit_time_pred_src/Data/logistic_dataset_filling_time_2021_2023.csv", delimiter=';', quotechar='"')
-    return df
+        #if not using IDS, your own code
+        # ADD YOUR OWN CODE
+
+    
+    
+        #if using IDS 
+        #Uncomment this block and set the parameters
+        #<<Dataset Provider IP>>: IP of the host where the dataset provider connector is deployed
+        #<<Dataset Provider Port>>: None if any forwarding of the default port 8086 in the dataset provider connector has been done when deploying otherwise forwarding port
+        ids_agent_client = IDSAgentClient()
+        # #Start transfer dataset
+        resp= ids_agent_client.get_asset_from_ids(config.MLFLOW_EXPERIMENT,"130.230.140.135",3040)
+        if resp == False:
+             return None
+        else:
+            #Get dataset from agent volume
+            response=ids_agent_client.get_dataset(config.MLFLOW_EXPERIMENT)
+            data = StringIO(response)
+            df = pd.read_csv(data, delimiter=';', quotechar='"')
+            return df
+    
+       
+    
+    except Exception as exc:
+        print(f'error:  { str(exc)}') 
+        return None
+       
