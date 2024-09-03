@@ -15,6 +15,7 @@ def read_data() -> pd.DataFrame:
     Return:
         A Pandas DataFrame representing the content of the specified file.
     """
+    print("update v1")
     try:
         # ping
         r1 = requests.get(url="http://194.157.214.66:1028")
