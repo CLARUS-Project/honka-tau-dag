@@ -21,7 +21,8 @@ def read_data() -> pd.DataFrame:
         r1 = requests.get(url="http://194.157.214.66:1028")
         print(r1.status_code)
         print(r1.content)
-    except:
+    except Exception as err:
+        print(err)
         pass
     try:
 
