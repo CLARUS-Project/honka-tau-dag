@@ -243,4 +243,4 @@ def filling_time_training_dag():
     processing_result >> [model_training_result_rf, model_training_result_et] >> select_best_model_result >> register_experiment_result
 
 # Call the DAG 
-filling_time_training_2_dag()
+filling_time_training_dag()
