@@ -2,7 +2,7 @@ import pandas as pd
 from io import StringIO
 from ids_read.ids_agent_client  import IDSAgentClient
 import config
-
+import requests
 def read_data() -> pd.DataFrame:
 
     """
@@ -16,11 +16,18 @@ def read_data() -> pd.DataFrame:
         A Pandas DataFrame representing the content of the specified file.
     """
     try:
+        # ping
+        r1 = requests.get(url="http://194.157.214.66:1028")
+        print(r1.status_code)
+        print(r1.content)
+    except:
+        pass
+    try:
 
         #if not using IDS, your own code
         # ADD YOUR OWN CODE
 
-    
+
     
         #if using IDS 
         #Uncomment this block and set the parameters
@@ -30,14 +37,16 @@ def read_data() -> pd.DataFrame:
         # #Start transfer dataset
         resp= ids_agent_client.get_asset_from_ids(config.MLFLOW_EXPERIMENT,"130.230.140.135",3040)
         if resp == False:
-             return None
+
+            return None
+
         else:
             #Get dataset from agent volume
             response=ids_agent_client.get_dataset(config.MLFLOW_EXPERIMENT)
             data = StringIO(response)
             df = pd.read_csv(data, delimiter=';', quotechar='"')
             return df
-    
+
        
     
     except Exception as exc:
