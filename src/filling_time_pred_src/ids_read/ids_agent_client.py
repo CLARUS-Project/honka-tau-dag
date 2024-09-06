@@ -112,7 +112,9 @@ class IDSAgentClient:
             if response is None or response.status_code != 200:
                 return ""
             else:
+
                 resp = response.json()
+                print(resp)
                 data = resp["message"]
                 return data
             

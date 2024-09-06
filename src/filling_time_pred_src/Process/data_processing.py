@@ -10,7 +10,7 @@ import pandas as pd
 import datetime
 import numpy as np
 def process_core(necessary_data_columns_frame):
-    print(necessary_data_columns_frame.head())
+    print(necessary_data_columns_frame)
     x_tag_list = ["SH","Category","Weight","Filling start"]  # source, material type, weight, start time
     x_array = necessary_data_columns_frame[x_tag_list].values.tolist()
     end_time_array = necessary_data_columns_frame["Filling end"].tolist()  # end time
