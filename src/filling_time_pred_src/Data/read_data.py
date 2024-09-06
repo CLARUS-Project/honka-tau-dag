@@ -38,7 +38,7 @@ def read_data() -> pd.DataFrame:
         #<<Dataset Provider Port>>: None if any forwarding of the default port 8086 in the dataset provider connector has been done when deploying otherwise forwarding port
         ids_agent_client = IDSAgentClient()
         # #Start transfer dataset
-        resp= ids_agent_client.get_asset_from_ids("CLARUS_HK_UC1_SC1_filling_time_v2","http://130.230.140.135",3040)
+        resp= ids_agent_client.get_asset_from_ids("CLARUS_HK_UC1_SC1_filling_time_v2","130.230.140.135",3040)
         if resp == False:
             print("unable to connect")
             return None
