@@ -47,7 +47,7 @@ def read_data() -> pd.DataFrame:
         else:
             #Get dataset from agent volume
             print("connected, get data")
-            response=ids_agent_client.get_dataset("CLARUS_HK_UC1_SC1_filling_time_v2")
+            response=ids_agent_client.get_dataset("CLARUS_HK_UC1_SC1_filling_time_v2",IP_addr,"3040")
             data = StringIO(response)
             df = pd.read_csv(data, delimiter=';', quotechar='"')
             return df

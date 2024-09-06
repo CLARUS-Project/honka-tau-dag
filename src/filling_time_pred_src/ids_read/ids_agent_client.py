@@ -94,7 +94,7 @@ class IDSAgentClient:
            
             return False        
         
-    def get_dataset(self, expId:str):
+    def get_dataset(self, expId:str, connectorIP:str, connectorPort: Optional[str] =None):
 
         """_summary_
 
@@ -103,8 +103,9 @@ class IDSAgentClient:
         """
         try:
             #Query agent to get dataset saved in volume 
-            url = "http://34.250.205.215:8082/api/v2/dataset?exp_id="+expId
+            #url = "http://34.250.205.215:8082/api/v2/dataset?exp_id="+expId
             #url = "http://localhost:8082/api/v2/dataset?exp_id="+expId
+            url = "http://34.250.205.215:8082/api/v2/consumer/asset?exp_id=" + expId + "&asset_type=dataset&provider_ip=" + connectorIP + "&provider_port=" + connectorPort
             response = self.get(url,120)
 
             #Check operation result
