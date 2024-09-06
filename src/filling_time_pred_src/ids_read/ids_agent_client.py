@@ -105,7 +105,8 @@ class IDSAgentClient:
             #Query agent to get dataset saved in volume 
             #url = "http://34.250.205.215:8082/api/v2/dataset?exp_id="+expId
             #url = "http://localhost:8082/api/v2/dataset?exp_id="+expId
-            url = "http://34.250.205.215:8082/api/v2/consumer/asset?exp_id=" + expId + "&asset_type=dataset&provider_ip=" + connectorIP + "&provider_port=" + connectorPort
+            #url = "http://34.250.205.215:8082/api/v2/consumer/asset?exp_id=" + expId + "&asset_type=dataset&provider_ip=" + connectorIP + "&provider_port=" + connectorPort
+            url = "http://34.250.205.215:8082/api/v2/dataset?exp_id=" + expId + "&asset_type=dataset&provider_ip=" + connectorIP + "&provider_port=" + connectorPort
             response = self.get(url,120)
 
             #Check operation result
@@ -114,7 +115,8 @@ class IDSAgentClient:
             else:
 
                 resp = response.json()
-                print(resp)
+                print("retrieved data",resp)
+                print("retrieved data end")
                 data = resp["message"]
                 return data
             
