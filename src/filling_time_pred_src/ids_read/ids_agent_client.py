@@ -95,7 +95,7 @@ class IDSAgentClient:
            
             return False        
         
-    def get_dataset(self, expId:str, connectorIP:str, connectorPort: Optional[str] =None):
+    def get_dataset(self, expId:str):
 
         """_summary_
 

@@ -39,7 +39,7 @@ def read_data() -> pd.DataFrame:
         ids_agent_client = IDSAgentClient()
         # #Start transfer dataset
         print("connecting to",IP_addr)
-        resp= ids_agent_client.get_asset_from_ids("CLARUS_HK_UC1_SC1_filling_time_v2",IP_addr,"3045")
+        resp= ids_agent_client.get_asset_from_ids("CLARUS_HK_UC1_SC1_filling_time_v2",IP_addr,"3040")
         if resp == False:
             print("unable to connect")
             return None
@@ -47,7 +47,7 @@ def read_data() -> pd.DataFrame:
         else:
             #Get dataset from agent volume
             print("connected, get data")
-            response=ids_agent_client.get_dataset("CLARUS_HK_UC1_SC1_filling_time_v2",IP_addr,"3045")
+            response=ids_agent_client.get_dataset("CLARUS_HK_UC1_SC1_filling_time_v2")
             data = StringIO(response)
             df = pd.read_csv(data, delimiter=';', quotechar='"')
             return df
