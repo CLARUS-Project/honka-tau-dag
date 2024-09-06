@@ -84,6 +84,7 @@ class IDSAgentClient:
             else:
                 url = "http://34.250.205.215:8082/api/v2/consumer/asset?exp_id="+expId+"&asset_type=dataset&provider_ip="+connectorIP+"&provider_port="+connectorPort
             response = self.get(url,120)
+            print("get_asset_from_ids resp ", response)
             #Check operation result
             if response is None or response.status_code != 200:
                 return False
@@ -103,14 +104,15 @@ class IDSAgentClient:
         """
         try:
             #Query agent to get dataset saved in volume 
-            #url = "http://34.250.205.215:8082/api/v2/dataset?exp_id="+expId
+            url = "http://34.250.205.215:8082/api/v2/dataset?exp_id="+expId
             #url = "http://localhost:8082/api/v2/dataset?exp_id="+expId
             #url = "http://34.250.205.215:8082/api/v2/consumer/asset?exp_id=" + expId + "&asset_type=dataset&provider_ip=" + connectorIP + "&provider_port=" + connectorPort
-            url = "http://34.250.205.215:8082/api/v2/dataset?exp_id=" + expId + "&asset_type=dataset&provider_ip=" + connectorIP + "&provider_port=" + connectorPort
+            #url = "http://34.250.205.215:8082/api/v2/dataset?exp_id=" + expId + "&asset_type=dataset&provider_ip=" + connectorIP + "&provider_port=" + connectorPort
             response = self.get(url,120)
 
             #Check operation result
             if response is None or response.status_code != 200:
+
                 return ""
             else:
 
