@@ -20,6 +20,7 @@ from mlflow.models import infer_signature
 from urllib.parse import urlparse
 import numpy as np
 import config
+import time
 from mlflow.tracking.client import MlflowClient
 def model_training_et(data: Dict[str, Any]):
     """
