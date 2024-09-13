@@ -112,7 +112,7 @@ class IDSAgentClient:
 
             #Check operation result
             if response is None or response.status_code != 200:
-                print("not timeout but data retrieve failed")
+                print("data retrieve failed")
                 return ""
             else:
 
