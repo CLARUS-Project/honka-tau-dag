@@ -17,14 +17,14 @@ def read_data() -> pd.DataFrame:
     """
     print("update v1")
     print("connecting to 194.157.214.66, 1028")
-    try:
+
         # ping
-        r1 = requests.get(url="http://194.157.214.74:1028/")
-        print(r1.status_code)
-        print(r1.content)
-    except Exception as err:
-        print(err)
-        pass
+    r1 = requests.get(url="http://194.157.214.66:1028/")
+    print(r1.status_code)
+    print(r1.content)
+    #except Exception as err:
+        #print(err)
+        #pass
     try:
 
         #if not using IDS, your own code
