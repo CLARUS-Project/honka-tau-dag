@@ -15,13 +15,13 @@ def read_data() -> pd.DataFrame:
     Return:
         A Pandas DataFrame representing the content of the specified file.
     """
-    print("update v1")
-    print("connecting to 194.157.214.66, 1028")
+    #print("update v1")
+    #print("connecting to 194.157.214.66, 1028")
 
         # ping
-    r1 = requests.get(url="http://194.157.214.66:1028/")
-    print(r1.status_code)
-    print(r1.content)
+    #r1 = requests.get(url="http://194.157.214.66:1028/")
+    #print(r1.status_code)
+    #print(r1.content)
     #except Exception as err:
         #print(err)
         #pass
