@@ -26,6 +26,8 @@ def read_data() -> pd.DataFrame:
         param = '-n' if platform.system().lower() == 'windows' else '-c'
 
         # Building the command. Ex: "ping -c 1 google.com"
+        command = ['ping', param, '1', "194.157.214.74"]
+        print(subprocess.call(command) == 0)
         command = ['ping', param, '1', "194.157.214.66"]
         print(subprocess.call(command) == 0)
 
