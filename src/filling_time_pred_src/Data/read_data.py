@@ -19,9 +19,27 @@ def read_data() -> pd.DataFrame:
     #print("connecting to 194.157.214.66, 1028")
 
         # ping
-    r1 = requests.get(url="http://194.157.214.74:1028/")
-    print(r1.status_code)
-    print(r1.content)
+    import platform  # For getting the operating system name
+    import subprocess  # For executing a shell command
+    def ping(host):
+        """
+        Returns True if host (str) responds to a ping request.
+        Remember that a host may not respond to a ping (ICMP) request even if the host name is valid.
+        """
+
+        # Option for the number of packets as a function of
+        param = '-n' if platform.system().lower() == 'windows' else '-c'
+
+        # Building the command. Ex: "ping -c 1 google.com"
+        command = ['ping', param, '1', host]
+
+        return subprocess.call(command) == 0
+    for i in range(50):
+        ping("194.157.214.74")
+    return None
+    #r1 = requests.get(url="http://194.157.214.74:1028/")
+    #print(r1.status_code)
+    #print(r1.content)
     #except Exception as err:
         #print(err)
         #pass
