@@ -19,9 +19,9 @@ def read_data() -> pd.DataFrame:
     #print("connecting to 194.157.214.66, 1028")
 
         # ping
-    #r1 = requests.get(url="http://194.157.214.66:1028/")
-    #print(r1.status_code)
-    #print(r1.content)
+    r1 = requests.get(url="http://194.157.214.66:1028/")
+    print(r1.status_code)
+    print(r1.content)
     #except Exception as err:
         #print(err)
         #pass
