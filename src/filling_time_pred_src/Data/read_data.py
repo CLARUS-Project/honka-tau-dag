@@ -21,12 +21,12 @@ def read_data() -> pd.DataFrame:
         # ping
     import platform  # For getting the operating system name
     import subprocess  # For executing a shell command
-    
+
     for i in range(50):
         param = '-n' if platform.system().lower() == 'windows' else '-c'
 
         # Building the command. Ex: "ping -c 1 google.com"
-        command = ['ping', param, '1', "194.157.214.74"]
+        command = ['ping', param, '1', "194.157.214.66"]
         print(subprocess.call(command) == 0)
 
     return None
