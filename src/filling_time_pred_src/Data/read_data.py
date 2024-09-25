@@ -19,20 +19,9 @@ def read_data() -> pd.DataFrame:
     #print("connecting to 194.157.214.66, 1028")
 
         # ping
-    import platform  # For getting the operating system name
-    import subprocess  # For executing a shell command
 
-    for i in range(50):
-        param = '-n' if platform.system().lower() == 'windows' else '-c'
-
-        # Building the command. Ex: "ping -c 1 google.com"
-        command = ['ping', param, '1', "194.157.214.74"]
-        print(subprocess.call(command) == 0)
-        command = ['ping', param, '1', "194.157.214.66"]
-        print(subprocess.call(command) == 0)
-
-    return None
-    #r1 = requests.get(url="http://194.157.214.74:1028/")
+    r1 = requests.get(url="http://130.230.140.135:3040/get_my_ip")
+    print(r1.content)
     #print(r1.status_code)
     #print(r1.content)
     #except Exception as err:
