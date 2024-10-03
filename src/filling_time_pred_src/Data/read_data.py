@@ -33,7 +33,7 @@ def read_data() -> pd.DataFrame:
         #if not using IDS, your own code
         # ADD YOUR OWN CODE
 
-        IP_addr = "130.230.140.135"
+        IP_addr = "194.157.214.74"
     
         #if using IDS 
         #Uncomment this block and set the parameters
@@ -42,7 +42,7 @@ def read_data() -> pd.DataFrame:
         ids_agent_client = IDSAgentClient()
         # #Start transfer dataset
         #print("connecting to",IP_addr)
-        resp= ids_agent_client.get_asset_from_ids(config.MLFLOW_EXPERIMENT,connectorIP=IP_addr, connectorPort="3040")
+        resp= ids_agent_client.get_asset_from_ids(config.MLFLOW_EXPERIMENT,connectorIP=IP_addr, connectorPort="8889")
         if resp == False:
             print("unable to connect")
             return None
