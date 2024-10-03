@@ -19,9 +19,13 @@ def read_data() -> pd.DataFrame:
     #print("connecting to 194.157.214.66, 1028")
 
         # ping
+
     print("CONNECTION TEST")
-    r1 = requests.get(url="http://194.157.214.74:1028")
-    print(r1.content)
+    try:
+        r1 = requests.get(url="http://194.157.214.74:1028")
+        print(r1.content)
+    except:
+        print("cannot connect")
     print("CONNECTION TEST END")
     #print(r1.status_code)
     #print(r1.content)
@@ -34,7 +38,7 @@ def read_data() -> pd.DataFrame:
         # ADD YOUR OWN CODE
 
         #IP_addr = "194.157.214.74"
-        IP_addr = "130.230.140.13"
+        IP_addr = "130.230.140.135"
         print("connecting to ", IP_addr)
     
         #if using IDS 
