@@ -34,6 +34,7 @@ def read_data() -> pd.DataFrame:
         # ADD YOUR OWN CODE
 
         IP_addr = "194.157.214.74"
+        print("connecting to ", IP_addr)
     
         #if using IDS 
         #Uncomment this block and set the parameters
