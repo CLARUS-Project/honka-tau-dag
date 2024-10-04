@@ -22,7 +22,7 @@ def read_data() -> pd.DataFrame:
 
     print("CONNECTION TEST")
     try:
-        r1 = requests.get(url="http://194.157.214.74:8086")
+        r1 = requests.get(url="http://194.157.214.74:1028")
         print(r1.content)
     except:
         print("cannot connect")
