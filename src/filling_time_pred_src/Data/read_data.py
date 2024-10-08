@@ -48,7 +48,7 @@ def read_data() -> pd.DataFrame:
         ids_agent_client = IDSAgentClient()
         # #Start transfer dataset
         #print("connecting to",IP_addr)
-        resp= ids_agent_client.get_asset_from_ids(config.MLFLOW_EXPERIMENT,connectorIP=IP_addr, connectorPort="1028")
+        resp= ids_agent_client.get_asset_from_ids(config.MLFLOW_EXPERIMENT,connectorIP=IP_addr, connectorPort="8086")
         if resp == False:
             print("unable to connect")
             return None
