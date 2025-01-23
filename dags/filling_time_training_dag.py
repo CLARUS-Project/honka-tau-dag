@@ -26,9 +26,9 @@ from airflow.models import Variable
     schedule_interval='* 12 * * *', 
     start_date=datetime.now(),
     catchup=False,
-    tags=['integ', 'filling_time'],
+    tags=['integration', 'filling_time'],
 ) 
-def filling_time_training_dag():
+def filling_time_training_dag_v2():
 
     env_vars={
         "POSTGRES_USERNAME": Variable.get("POSTGRES_USERNAME"),
@@ -310,7 +310,7 @@ def filling_time_training_dag():
     # Instantiate each task and define task dependencie
     processing_result = read_data_procces_task()
     model_training_result_rf = model_training_rf_task(processing_result)
-    model_training_result_et = model_training_task_et(processing_result)
+    #model_training_result_et = model_training_task_et(processing_result)
     select_best_model_result = select_best_model_task(processing_result)
     register_experiment_result = register_experiment_task(select_best_model_result)
     build_inference_result = build_inference_task(select_best_model_result)
@@ -320,4 +320,4 @@ def filling_time_training_dag():
     processing_result >> model_training_result_rf >> select_best_model_result >> [register_experiment_result, build_inference_result]
 
 # Call the DAG 
-filling_time_training_dag()
+filling_time_training_dag_v2()
