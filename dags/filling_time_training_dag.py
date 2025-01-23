@@ -111,9 +111,7 @@ def filling_time_training_dag():
                     "Data/logistic_dataset_filling_time_2021_2023.csv",
                     delimiter=';', quotechar='"')
             except:
-                df = pd.read_csv(
-                    "/git/honka-tau-dag/src/filling_time_pred_src/Data/logistic_dataset_filling_time_2021_2023.csv",
-                    delimiter=';', quotechar='"')
+                df = None
         dp = data_processing(df)
 
         read_id = str(uuid.uuid4())
