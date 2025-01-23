@@ -317,7 +317,7 @@ def filling_time_training_dag():
 
     # Define the order of the pipeline
     #processing_result >> [model_training_result_rf, model_training_result_et] >> select_best_model_result >> [register_experiment_result, build_inference_result]
-    processing_result >> model_training_result_rf >> select_best_model_result >> [register_experiment_result, build_inference_result]
+    processing_result >> [model_training_result_rf, model_training_result_et] >> select_best_model_result >> [register_experiment_result, build_inference_result]
 
 # Call the DAG 
 filling_time_training_dag()
