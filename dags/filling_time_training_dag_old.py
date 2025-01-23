@@ -22,12 +22,12 @@ from kubernetes.client import models as k8s
 from airflow.models import Variable
 
 @dag(
-    description='MLOps lifecycle production',
-    schedule_interval=None,
-    start_date=datetime(2022, 1, 1),
+    description='MLOps lifecycle',
+    schedule_interval='* 12 * * *', 
+    start_date=datetime.now(),
     catchup=False,
-    tags=['demo', 'filling_time'],
-)
+    tags=['integration', 'filling_time'],
+) 
 def filling_time_training_dag():
 
     env_vars={
@@ -42,8 +42,7 @@ def filling_time_training_dag():
         "TRUE_CONNECTOR_CLOUD_PORT": Variable.get("IDS_PROXY_PORT"),
         "MLFLOW_ENDPOINT": Variable.get("MLFLOW_ENDPOINT"),
         "MLFLOW_TRACKING_USERNAME": Variable.get("MLFLOW_TRACKING_USERNAME"),
-        "MLFLOW_TRACKING_PASSWORD": Variable.get("MLFLOW_TRACKING_PASSWORD"),
-        "container": "docker"
+        "MLFLOW_TRACKING_PASSWORD": Variable.get("MLFLOW_TRACKING_PASSWORD")
     }
 
     volume_mount = k8s.V1VolumeMount(
@@ -53,13 +52,14 @@ def filling_time_training_dag():
     init_container_volume_mounts = [
         k8s.V1VolumeMount(mount_path="/git", name="dag-dependencies")
     ]
-
+    
     volume = k8s.V1Volume(name="dag-dependencies", empty_dir=k8s.V1EmptyDirVolumeSource())
 
     init_container = k8s.V1Container(
         name="git-clone",
         image="alpine/git:latest",
         command=["sh", "-c", "mkdir -p /git && cd /git && git clone -b main --single-branch https://github.com/CLARUS-Project/honka-tau-dag"],
+        #command=["sh", "-c", "mkdir -p /git && cd /git && git clone -b main --single-branch https://<repo_owner>:<project_token>@github.com/CLARUS-Project/honka-tau-dag"],
         volume_mounts=init_container_volume_mounts
     )
 
@@ -80,8 +80,10 @@ def filling_time_training_dag():
         import redis
         import uuid
         import pickle
+        import pandas as pd
+        import os
 
-        sys.path.insert(1, '/git/ai-toolkit-dags/src/filling_time_pred_src')
+        sys.path.insert(1, '/git/honka-tau-dag/src/filling_time_pred_src')
         from Data.read_data import read_data
         from Process.data_processing import data_processing
 
@@ -91,7 +93,25 @@ def filling_time_training_dag():
             password='pass'
         )
 
-        df = read_data()
+        try:
+            df = read_data()
+        except:
+            cwd = os.getcwd()
+            print("current_directory: ", cwd)
+            try:
+                files = [f for f in os.listdir('/git/honka-tau-dag/src/filling_time_pred_src/Data/')]
+                print(">current file")
+                for f in files:
+                    print(f)
+                print(">file list over")
+            except:
+                pass
+            try:
+                df = pd.read_csv(
+                    "Data/logistic_dataset_filling_time_2021_2023.csv",
+                    delimiter=';', quotechar='"')
+            except:
+                df = None
         dp = data_processing(df)
 
         read_id = str(uuid.uuid4())
@@ -103,16 +123,14 @@ def filling_time_training_dag():
 
     @task.kubernetes(
         image='clarusproject/dag-image:1.0.0-slim',
-        name='model_retraining',
-        task_id='model_retraining',
+        name='model_training_rf_task',
+        task_id='model_training_rf_task',
         namespace='airflow',
         get_logs=True,
         init_containers=[init_container],
         volumes=[volume],
         volume_mounts=[volume_mount],
-        env_vars=env_vars,
-        do_xcom_push=True
-
+        env_vars=env_vars
     )
     def model_training_rf_task(read_id=None):
         import sys
@@ -162,7 +180,7 @@ def filling_time_training_dag():
         res = pickle.loads(data)
 
         return model_training_et(res)
-
+    
     @task.kubernetes(
         image='clarusproject/dag-image:1.0.0-slim',
         name='select_best_model',
@@ -175,11 +193,11 @@ def filling_time_training_dag():
         env_vars=env_vars,
         do_xcom_push=True
     )
-
-    def select_best_model_task(retrain_info):
+    def select_best_model_task(read_id):
+        import redis
         import sys
 
-        sys.path.insert(1, '/git/honka-tau-dag/src/filling_time_pred_sr')
+        sys.path.insert(1, '/git/honka-tau-dag/src/filling_time_pred_src')
         from Deployment.select_best_model import select_best_model
 
         redis_client = redis.StrictRedis(
@@ -191,7 +209,7 @@ def filling_time_training_dag():
         redis_client.delete('data-' + read_id)
 
         return select_best_model()
-
+    
     @task.kubernetes(
         image='clarusproject/dag-image:1.0.0-slim',
         name='register_experiment',
@@ -206,13 +224,13 @@ def filling_time_training_dag():
     def register_experiment_task(best_model_res):
         import sys
 
-        sys.path.insert(1, '/git/ai-toolkit-dags/src/redwine')
-        from Deployment.register_experiment import register_experiment_rds
+        sys.path.insert(1, '/git/honka-tau-dag/src/filling_time_pred_src')
+        from Deployment.register_experiment import register_experiment
 
-        return register_experiment_rds(best_model_res)
+        return register_experiment(best_model_res)
 
     @task.kubernetes(
-        #image='mfernandezlabastida/kaniko:1.0',
+        # image='mfernandezlabastida/kaniko:1.0',
         image='clarusproject/dag-image:kaniko',
         name='build_inference',
         task_id='build_inference',
@@ -239,7 +257,6 @@ def filling_time_training_dag():
         """
         path = '/git/ai-toolkit-dags/build_docker'
         endpoint = 'registry-docker-registry.registry.svc.cluster.local:5001/redwine:ids'
-
 
         def download_artifacts(run_id, path):
             mlflow.set_tracking_uri("http://mlflow-tracking.mlflow.svc.cluster.local:5000")
@@ -272,7 +289,6 @@ def filling_time_training_dag():
                 for package in required_packages:
                     f.write(f"{package}\n")
 
-
         logging.warning(f"Downloading artifacts from run_id: {run_id['best_run']}")
         download_artifacts(run_id['best_run'], path)
         modify_requirements_file(path)
@@ -289,19 +305,17 @@ def filling_time_training_dag():
             check=True  # Lanza una excepción si el comando devuelve un código diferente de cero
         )
         logging.warning(f"Kaniko executor finished with return code: {result.returncode}")
-
-
-    # Instantiate each task and define task dependencies
+    # Instantiate each task and define task dependencie
     processing_result = read_data_procces_task()
     model_training_result_rf = model_training_rf_task(processing_result)
-    # model_training_result_et = model_training_task_et(processing_result)
+    #model_training_result_et = model_training_task_et(processing_result)
     select_best_model_result = select_best_model_task(processing_result)
     register_experiment_result = register_experiment_task(select_best_model_result)
     build_inference_result = build_inference_task(select_best_model_result)
 
     # Define the order of the pipeline
-    # processing_result >> [model_training_result_rf, model_training_result_et] >> select_best_model_result >> [register_experiment_result, build_inference_result]
+    #processing_result >> [model_training_result_rf, model_training_result_et] >> select_best_model_result >> [register_experiment_result, build_inference_result]
     processing_result >> [model_training_result_rf, model_training_result_et] >> select_best_model_result >> [register_experiment_result, build_inference_result]
 
-# Call the DAG
+# Call the DAG 
 filling_time_training_dag()
