@@ -23,7 +23,7 @@ jobs:
                   repo: ai-toolkit-central
                   github_token: ${{  secrets.CENTRAL_REPO_TOKEN  }}
                   workflow_file_name: sync_submodule.yml 
-                  ref: filling_time_infer
+                  ref: main
                   wait_interval: 10
                   propagate_failure: true
                   trigger_workflow: true
