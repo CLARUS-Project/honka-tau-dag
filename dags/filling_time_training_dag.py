@@ -294,7 +294,7 @@ def filling_time_training_dag():
     # Instantiate each task and define task dependencies
     processing_result = read_data_procces_task()
     model_training_result_rf = model_training_rf_task(processing_result)
-    # model_training_result_et = model_training_task_et(processing_result)
+    model_training_result_et = model_training_task_et(processing_result)
     select_best_model_result = select_best_model_task(processing_result)
     register_experiment_result = register_experiment_task(select_best_model_result)
     build_inference_result = build_inference_task(select_best_model_result)
