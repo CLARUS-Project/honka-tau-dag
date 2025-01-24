@@ -9,8 +9,6 @@ import json
 import config
 import psycopg2
 from psycopg2 import Error
-from IDS_templates.register_experiment_main import handle_post
-from IDS_templates.rest_ids_consumer_connector import RestIDSConsumerConnector
 
 def register_experiment_rds(res: dict = None):
     """
@@ -62,18 +60,4 @@ def register_experiment_rds(res: dict = None):
         print("Error while working with PostgreSQL", error)
         raise error
 
-
-def register_experiment(res: dict = None):
-    """
-        This function implements the logic to regsiter a new experiment into a database and into IDS consumer tureconnector
-    """
-    register_experiment_rds(res)
-
-    ids_consumer = RestIDSConsumerConnector()
-    print("Register experiment task:")
-
-    if ids_consumer.is_artifact_internal_registered_by_resource_title(config.MLFLOW_EXPERIMENT ,config.TRUE_CONNECTOR_CLOUD_IP)==False:
-        return handle_post(config.MLFLOW_EXPERIMENT,'Primera prueba',config.TRUE_CONNECTOR_CLOUD_IP)
-    else:
-        print('The experiment is already registered')
     

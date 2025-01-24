@@ -1,6 +1,6 @@
+import json
 import requests
-from typing import Optional
-
+import pandas as pd
 
 
 
@@ -47,27 +47,27 @@ class IDSAgentClient:
             bool: _description_
         """
         try:
-            # #Query connector consumer to get dataset artifact from connector provider
-            # url = "http://34.250.205.215:8082/api/v2/consumer/asset?exp_id="+expId+"&asset_type=dataset&provider_ip="+connectorIP
-            # response = self.get(url,120)
-            # #Check operation result
-            # if response is None or response != 200:
-            #     return False
-            # else:
-            #     #Get csv from minio server
-            #     # Connect to minio
-            #     client = Minio(minioEndpoint, access_key= minioUser, secret_key=minioPass,secure=False)
-            #     # Download asset to shared folder (connector datalake)
-            #     minio_path =expId + "/dataset.csv"
-            #     dest_path = "dataset.csv"
-            #     client.fget_object("dataset", minio_path, dest_path) 
+            #Query connector consumer to get dataset artifact from connector provider
+            url = "http://34.250.205.215:8082/api/v2/consumer/asset?exp_id="+expId+"&asset_type=dataset&provider_ip="+connectorIP
+            response = self.get(url,120)
+            #Check operation result
+            if response is None or response != 200:
+                return False
+            else:
+                #Get csv from minio server
+                # Connect to minio
+                client = Minio(minioEndpoint, access_key= minioUser, secret_key=minioPass,secure=False)
+                # Download asset to shared folder (connector datalake)
+                minio_path =expId + "/dataset.csv"
+                dest_path = "dataset.csv"
+                client.fget_object("dataset", minio_path, dest_path) 
                 return True
             
         except Exception as e:
            
             return False
         
-    def get_asset_from_ids(self, expId:str, connectorIP:str, connectorPort: Optional[str] =None) -> bool:
+    def get_asset_from_ids(self, expId:str, connectorIP:str) -> bool:
         """_summary_
 
         Args:
@@ -79,12 +79,8 @@ class IDSAgentClient:
         """
         try:
             #Query connector consumer to get dataset artifact from connector provider
-            if connectorPort is None:            
-                url = "http://34.250.205.215:8082/api/v2/consumer/asset?exp_id="+expId+"&asset_type=dataset&provider_ip="+connectorIP
-            else:
-                url = "http://34.250.205.215:8082/api/v2/consumer/asset?exp_id="+expId+"&asset_type=dataset&provider_ip="+connectorIP+"&provider_port="+connectorPort
+            url = "http://34.250.205.215:8082/api/v2/consumer/asset?exp_id="+expId+"&asset_type=dataset&provider_ip="+connectorIP
             response = self.get(url,120)
-            print("get_asset_from_ids resp ", response)
             #Check operation result
             if response is None or response.status_code != 200:
                 return False
@@ -106,22 +102,16 @@ class IDSAgentClient:
             #Query agent to get dataset saved in volume 
             url = "http://34.250.205.215:8082/api/v2/dataset?exp_id="+expId
             #url = "http://localhost:8082/api/v2/dataset?exp_id="+expId
-            #url = "http://34.250.205.215:8082/api/v2/consumer/asset?exp_id=" + expId + "&asset_type=dataset&provider_ip=" + connectorIP + "&provider_port=" + connectorPort
-            #url = "http://34.250.205.215:8082/api/v2/dataset?exp_id=" + expId + "&asset_type=dataset&provider_ip=" + connectorIP + "&provider_port=" + connectorPort
             response = self.get(url,120)
 
             #Check operation result
             if response is None or response.status_code != 200:
-                print("data retrieve failed")
                 return ""
             else:
-
                 resp = response.json()
-                print("retrieved data",resp)
-                print("retrieved data end")
                 data = resp["message"]
                 return data
             
         except Exception as e:
-            print("error", e)
-            return False
+           
+            return False        

@@ -23,14 +23,14 @@ from airflow.models import Variable
 
 @dag(
     description='MLOps lifecycle production',
-    schedule_interval=None,
+    schedule_interval=None, 
     start_date=datetime(2022, 1, 1),
     catchup=False,
-    tags=['demo', 'filling_time'],
-)
-def filling_time_training_dag():
+    tags=['demo', 'testing'],
+) 
+def filling_time_training_dag_infer():
 
-    env_vars={
+    env_vars={ 
         "POSTGRES_USERNAME": Variable.get("POSTGRES_USERNAME"),
         "POSTGRES_PASSWORD": Variable.get("POSTGRES_PASSWORD"),
         "POSTGRES_DATABASE": Variable.get("POSTGRES_DATABASE"),
@@ -53,13 +53,13 @@ def filling_time_training_dag():
     init_container_volume_mounts = [
         k8s.V1VolumeMount(mount_path="/git", name="dag-dependencies")
     ]
-
+    
     volume = k8s.V1Volume(name="dag-dependencies", empty_dir=k8s.V1EmptyDirVolumeSource())
 
     init_container = k8s.V1Container(
         name="git-clone",
         image="alpine/git:latest",
-        command=["sh", "-c", "mkdir -p /git && cd /git && git clone -b main --single-branch https://github.com/CLARUS-Project/honka-tau-dag"],
+        command=["sh", "-c", "mkdir -p /git && cd /git && git clone -b filling_time_infer --single-branch https://github.com/CLARUS-Project/honka-tau-dag.git"],
         volume_mounts=init_container_volume_mounts
     )
 
@@ -81,7 +81,7 @@ def filling_time_training_dag():
         import uuid
         import pickle
 
-        sys.path.insert(1, '/git/ai-toolkit-dags/src/filling_time_pred_src')
+        sys.path.insert(1, '/git/ai-toolkit-dags/src/redwine')
         from Data.read_data import read_data
         from Process.data_processing import data_processing
 
@@ -99,7 +99,7 @@ def filling_time_training_dag():
         redis_client.set('data-' + read_id, pickle.dumps(dp))
 
         return read_id
-
+    
 
     @task.kubernetes(
         image='clarusproject/dag-image:1.0.0-slim',
@@ -114,13 +114,13 @@ def filling_time_training_dag():
         do_xcom_push=True
 
     )
-    def model_training_rf_task(read_id=None):
+    def model_retraining_result_task(read_id=None):
         import sys
         import redis
         import pickle
 
-        sys.path.insert(1, '/git/honka-tau-dag/src/filling_time_pred_src')
-        from Models.model_training import model_training
+        sys.path.insert(1, '/git/ai-toolkit-dags/src/redwine')
+        from Models.model_retrain import model_retrain
 
         redis_client = redis.StrictRedis(
             host='redis-headless.redis.svc.cluster.local',
@@ -130,27 +130,7 @@ def filling_time_training_dag():
 
         data = redis_client.get('data-' + read_id)
         res = pickle.loads(data)
-        return model_training(res)
-
-    @task.kubernetes(
-        image='clarusproject/dag-image:1.0.0-slim',
-        name='model_training_etree_task',
-        task_id='model_training_etree_task',
-        namespace='airflow',
-        get_logs=True,
-        init_containers=[init_container],
-        volumes=[volume],
-        volume_mounts=[volume_mount],
-        env_vars=env_vars
-
-    )
-    def model_training_task_et(read_id=None):
-        import sys
-        import redis
-        import pickle
-
-        sys.path.insert(1, '/git/honka-tau-dag/src/filling_time_pred_src')
-        from Models.model_training_extra_trees import model_training_et
+        retrain_info = model_retrain(res)
 
         redis_client = redis.StrictRedis(
             host='redis-headless.redis.svc.cluster.local',
@@ -158,11 +138,10 @@ def filling_time_training_dag():
             password='pass'
         )
 
-        data = redis_client.get('data-' + read_id)
-        res = pickle.loads(data)
+        redis_client.delete('data-' + read_id)
 
-        return model_training_et(res)
-
+        return retrain_info
+    
     @task.kubernetes(
         image='clarusproject/dag-image:1.0.0-slim',
         name='select_best_model',
@@ -175,23 +154,14 @@ def filling_time_training_dag():
         env_vars=env_vars,
         do_xcom_push=True
     )
-
     def select_best_model_task(retrain_info):
         import sys
 
-        sys.path.insert(1, '/git/honka-tau-dag/src/filling_time_pred_sr')
+        sys.path.insert(1, '/git/ai-toolkit-dags/src/redwine')
         from Deployment.select_best_model import select_best_model
 
-        redis_client = redis.StrictRedis(
-            host='redis-headless.redis.svc.cluster.local',
-            port=6379,  # El puerto por defecto de Redis
-            password='pass'
-        )
-
-        redis_client.delete('data-' + read_id)
-
-        return select_best_model()
-
+        return select_best_model(retrain_info)
+    
     @task.kubernetes(
         image='clarusproject/dag-image:1.0.0-slim',
         name='register_experiment',
@@ -210,7 +180,7 @@ def filling_time_training_dag():
         from Deployment.register_experiment import register_experiment_rds
 
         return register_experiment_rds(best_model_res)
-
+    
     @task.kubernetes(
         #image='mfernandezlabastida/kaniko:1.0',
         image='clarusproject/dag-image:kaniko',
@@ -289,19 +259,17 @@ def filling_time_training_dag():
             check=True  # Lanza una excepción si el comando devuelve un código diferente de cero
         )
         logging.warning(f"Kaniko executor finished with return code: {result.returncode}")
-
+    
 
     # Instantiate each task and define task dependencies
     processing_result = read_data_procces_task()
-    model_training_result_rf = model_training_rf_task(processing_result)
-    model_training_result_et = model_training_task_et(processing_result)
-    select_best_model_result = select_best_model_task(processing_result)
+    model_retraining_result = model_retraining_result_task(processing_result)
+    select_best_model_result = select_best_model_task(model_retraining_result)
     register_experiment_result = register_experiment_task(select_best_model_result)
     build_inference_result = build_inference_task(select_best_model_result)
 
     # Define the order of the pipeline
-    # processing_result >> [model_training_result_rf, model_training_result_et] >> select_best_model_result >> [register_experiment_result, build_inference_result]
-    processing_result >> [model_training_result_rf, model_training_result_et] >> select_best_model_result >> [register_experiment_result, build_inference_result]
+    processing_result >> model_retraining_result >> select_best_model_result >> [register_experiment_result, build_inference_result]
 
-# Call the DAG
-filling_time_training_dag()
+# Call the DAG 
+filling_time_training_dag_infer()
