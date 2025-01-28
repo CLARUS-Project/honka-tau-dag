@@ -81,7 +81,7 @@ def filling_time_training_dag():
         import uuid
         import pickle
 
-        sys.path.insert(1, '/git/ai-toolkit-dags/src/filling_time_pred_src/')
+        sys.path.insert(1, '/git/honka-tau-dag/src/filling_time_pred_src/')
         from Data.read_data import read_data
         from Process.data_processing import data_processing
 
@@ -206,7 +206,7 @@ def filling_time_training_dag():
     def register_experiment_task(best_model_res):
         import sys
 
-        sys.path.insert(1, '/git/ai-toolkit-dags/src/filling_time_pred_src/')
+        sys.path.insert(1, '/git/honka-tau-dag/src/filling_time_pred_src/')
         from Deployment.register_experiment import register_experiment_rds
 
         return register_experiment_rds(best_model_res)
