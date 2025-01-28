@@ -81,7 +81,7 @@ def filling_time_training_dag():
         import uuid
         import pickle
 
-        sys.path.insert(1, '/git/ai-toolkit-dags/src/filling_time_pred_src')
+        sys.path.insert(1, '/git/ai-toolkit-dags/src/filling_time_pred_src/')
         from Data.read_data import read_data
         from Process.data_processing import data_processing
 
@@ -119,7 +119,7 @@ def filling_time_training_dag():
         import redis
         import pickle
 
-        sys.path.insert(1, '/git/honka-tau-dag/src/filling_time_pred_src')
+        sys.path.insert(1, '/git/honka-tau-dag/src/filling_time_pred_src/')
         from Models.model_training import model_training
 
         redis_client = redis.StrictRedis(
@@ -149,7 +149,7 @@ def filling_time_training_dag():
         import redis
         import pickle
 
-        sys.path.insert(1, '/git/honka-tau-dag/src/filling_time_pred_src')
+        sys.path.insert(1, '/git/honka-tau-dag/src/filling_time_pred_src/')
         from Models.model_training_extra_trees import model_training_et
 
         redis_client = redis.StrictRedis(
@@ -179,7 +179,7 @@ def filling_time_training_dag():
     def select_best_model_task(retrain_info):
         import sys
 
-        sys.path.insert(1, '/git/honka-tau-dag/src/filling_time_pred_sr')
+        sys.path.insert(1, '/git/honka-tau-dag/src/filling_time_pred_src/')
         from Deployment.select_best_model import select_best_model
 
         redis_client = redis.StrictRedis(
@@ -206,7 +206,7 @@ def filling_time_training_dag():
     def register_experiment_task(best_model_res):
         import sys
 
-        sys.path.insert(1, '/git/ai-toolkit-dags/src/redwine')
+        sys.path.insert(1, '/git/ai-toolkit-dags/src/filling_time_pred_src/')
         from Deployment.register_experiment import register_experiment_rds
 
         return register_experiment_rds(best_model_res)
