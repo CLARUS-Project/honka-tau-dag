@@ -178,7 +178,7 @@ def filling_time_training_dag():
 
     def select_best_model_task(retrain_info):
         import sys
-
+        import redis
         sys.path.insert(1, '/git/honka-tau-dag/src/filling_time_pred_src/')
         from Deployment.select_best_model import select_best_model
 
