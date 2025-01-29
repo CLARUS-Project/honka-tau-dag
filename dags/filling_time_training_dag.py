@@ -237,8 +237,8 @@ def filling_time_training_dag():
         """
         MODIFY WHAT YOU WANT
         """
-        path = '/git/ai-toolkit-dags/build_docker'
-        endpoint = 'registry-docker-registry.registry.svc.cluster.local:5001/redwine:ids'
+        path = '/git/honka-tau-dag/build_docker'
+        endpoint = 'registry-docker-registry.registry.svc.cluster.local:5001/honka_filling_durration:ids'
 
 
         def download_artifacts(run_id, path):
