@@ -176,7 +176,7 @@ def filling_time_training_dag():
         do_xcom_push=True
     )
 
-    def select_best_model_task(retrain_info):
+    def select_best_model_task(read_id):
         import sys
         import redis
         sys.path.insert(1, '/git/honka-tau-dag/src/filling_time_pred_src/')
