@@ -3,6 +3,7 @@ from fastapi import FastAPI
 from pydantic import BaseModel
 import numpy as np
 import uvicorn
+import json
 
 # Definir el modelo FastAPI
 app = FastAPI()
@@ -27,19 +28,30 @@ class PredictionInput(BaseModel):
     alcohol: float
 
 @app.post("/predict")
-def predict(input_data: PredictionInput):
-    # Convertir los datos de entrada a un array NumPy
-    input_values = np.array([[input_data.fixed_acidity, input_data.volatile_acidity,
-                              input_data.citric_acid, input_data.residual_sugar,
-                              input_data.chlorides, input_data.free_sulfur_dioxide,
-                              input_data.total_sulfur_dioxide, input_data.density,
-                              input_data.pH, input_data.sulphates, input_data.alcohol]])
-    
-    # Realizar la predicción
-    prediction = model.predict(input_values)[0]
-    
-    # Retornar la predicción
-    return {"prediction": prediction.tolist()}
+def predict(data_package):
+    data_decoded = json.loads(data_package)
+    modelId = data_decoded["model"]
+    datos = data_decoded["input_data"]
+    logger.info('Predicción del modelo modelId: ' + str(modelId))
+    logger.info('Predicción del modelo con datos: ' + str(datos))
+    # print(os.listdir())
+    # decoy_num = np.array([1])
+    # return {"predicted_result":decoy_num.tolist()}
+    # Carga el modelo utilizando pickle u otra biblioteca adecuada
+    modelpath = './model/' + modelId + '/model.pkl'
+    logger.info('Load model from: ' + modelpath)
+    with open(modelpath, 'rb') as archivo:
+        model = pickle.load(archivo)
+
+    if (model is None):
+        return ('No model found')
+    inp_data = np.array(datos).reshape(-1, len(datos))
+    # trans_data = np.array([*eval(datos).values()]).reshape(1,-1)
+    pred_model = model.predict(inp_data)
+
+    # logger.info('Predicción del modelo: '+ pred_model)
+
+    return {"predicted_result": pred_model.tolist()}
 
 if __name__ == "__main__":
     # Iniciar el servidor FastAPI
