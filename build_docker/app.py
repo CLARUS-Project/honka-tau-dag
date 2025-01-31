@@ -30,21 +30,14 @@ class PredictionInput(BaseModel):
 @app.post("/predict")
 def predict(data_package):
     data_decoded = json.loads(data_package)
-    modelId = data_decoded["model"]
     datos = data_decoded["input_data"]
-    logger.info('Predicción del modelo modelId: ' + str(modelId))
-    logger.info('Predicción del modelo con datos: ' + str(datos))
+    #logger.info('Predicción del modelo modelId: ' + str(modelId))
+    #logger.info('Predicción del modelo con datos: ' + str(datos))
     # print(os.listdir())
     # decoy_num = np.array([1])
     # return {"predicted_result":decoy_num.tolist()}
     # Carga el modelo utilizando pickle u otra biblioteca adecuada
-    modelpath = './model/' + modelId + '/model.pkl'
-    logger.info('Load model from: ' + modelpath)
-    with open(modelpath, 'rb') as archivo:
-        model = pickle.load(archivo)
 
-    if (model is None):
-        return ('No model found')
     inp_data = np.array(datos).reshape(-1, len(datos))
     # trans_data = np.array([*eval(datos).values()]).reshape(1,-1)
     pred_model = model.predict(inp_data)
