@@ -15,36 +15,33 @@ with open(model_path, "rb") as model_file:
 
 # Definir el esquema de entrada para las predicciones
 class PredictionInput(BaseModel):
-    fixed_acidity: float
-    volatile_acidity: float
-    citric_acid: float
-    residual_sugar: float
-    chlorides: float
-    free_sulfur_dioxide: float
-    total_sulfur_dioxide: float
-    density: float
-    pH: float
-    sulphates: float
-    alcohol: float
+    weekday: float
+    source_tag: float
+    mat_tag: float
+    month: float
+    day: float
+    hour: float
+    minute: float
+    week_no: float
+
 
 @app.post("/predict")
-def predict(data_package):
-    data_decoded = json.loads(data_package)
-    datos = data_decoded["input_data"]
-    #logger.info('Predicción del modelo modelId: ' + str(modelId))
-    #logger.info('Predicción del modelo con datos: ' + str(datos))
-    # print(os.listdir())
-    # decoy_num = np.array([1])
-    # return {"predicted_result":decoy_num.tolist()}
-    # Carga el modelo utilizando pickle u otra biblioteca adecuada
+def predict(input_data: PredictionInput):
+    # Convertir los datos de entrada a un array NumPy
+    input_values = np.array([[input_data.weekday,
+                              input_data.source_tag,
+                              input_data.mat_tag,
+                              input_data.month,
+                              input_data.day,
+                              input_data.hour,
+                              input_data.minute,
+                              input_data.week_no]])
 
-    inp_data = np.array(datos).reshape(-1, len(datos))
-    # trans_data = np.array([*eval(datos).values()]).reshape(1,-1)
-    pred_model = model.predict(inp_data)
+    # Realizar la predicción
+    prediction = model.predict(input_values)[0]
 
-    # logger.info('Predicción del modelo: '+ pred_model)
-
-    return {"predicted_result": pred_model.tolist()}
+    # Retornar la predicción
+    return {"prediction": prediction.tolist()}
 
 if __name__ == "__main__":
     # Iniciar el servidor FastAPI
