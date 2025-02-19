@@ -26,7 +26,7 @@ from airflow.models import Variable
     schedule_interval=None, 
     start_date=datetime(2022, 1, 1),
     catchup=False,
-    tags=['demo', 'testing'],
+    tags=['demo', 'testing',"infer"],
 ) 
 def filling_time_training_dag_infer():
 
