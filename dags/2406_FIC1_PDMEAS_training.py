@@ -20,7 +20,6 @@ from datetime import datetime
 from airflow.decorators import dag, task
 from kubernetes.client import models as k8s
 from airflow.models import Variable
-
 @dag(
     description='MLOps lifecycle production',
     schedule_interval=None,
@@ -28,7 +27,7 @@ from airflow.models import Variable
     catchup=False,
     tags=['demonstration', 'filling_time'],
 )
-def filling_time_training_dag():
+def sensor_2406_FIC1_PDMEAS():
 
     env_vars={
         "POSTGRES_USERNAME": Variable.get("POSTGRES_USERNAME"),
@@ -59,7 +58,7 @@ def filling_time_training_dag():
     init_container = k8s.V1Container(
         name="git-clone",
         image="alpine/git:latest",
-        command=["sh", "-c", "mkdir -p /git && cd /git && git clone -b main --single-branch https://github.com/CLARUS-Project/honka-tau-dag.git"],
+        command=["sh", "-c", "mkdir -p /git && cd /git && git clone -b 2406_FIC1_PDMEAS --single-branch https://github.com/CLARUS-Project/honka-tau-dag.git"],
         volume_mounts=init_container_volume_mounts
     )
 
@@ -304,4 +303,4 @@ def filling_time_training_dag():
     processing_result >> [model_training_result_rf, model_training_result_et] >> select_best_model_result >> [register_experiment_result, build_inference_result]
 
 # Call the DAG
-filling_time_training_dag()
+sensor_2406_FIC1_PDMEAS()
