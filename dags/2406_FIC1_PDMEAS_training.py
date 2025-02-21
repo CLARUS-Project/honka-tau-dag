@@ -20,6 +20,7 @@ from datetime import datetime
 from airflow.decorators import dag, task
 from kubernetes.client import models as k8s
 from airflow.models import Variable
+
 @dag(
     description='MLOps lifecycle production',
     schedule_interval=None,
