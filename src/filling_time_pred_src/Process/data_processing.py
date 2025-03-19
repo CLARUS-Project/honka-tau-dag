@@ -37,9 +37,9 @@ def data_processing(df: pd.DataFrame) -> Dict[str, Any]:
     # ADD YOUR CODE HERE
     dataset1_x, dataset1_y = process_core(df)
     dataset1_x_train, dataset1_x_test, dataset1_y_train, dataset1_y_test = train_test_split(dataset1_x,dataset1_y,test_size=0.3, random_state= 1)
-    print(dataset1_x)
-    print(len(dataset1_x))
-
+    #print(dataset1_x)
+    #print(len(dataset1_x))
+    dataset1_y_train = dataset1_y_train.apply(lambda x: np.log10(x))
 
     return {"dataset1_x_train": dataset1_x_train,
             "dataset1_y_train": dataset1_y_train,

@@ -74,8 +74,8 @@ def model_training(data: Dict[str, Any]):
         regr.fit(x_train, y_train)
 
         pred_values = regr.predict(x_test)
-
-        (rmse, mae, r2) = utils.eval_metrics_2(y_test, pred_values)
+        pred_values_scaled = 10**pred_values
+        (rmse, mae, r2) = utils.eval_metrics_2(y_test, pred_values_scaled)
 
         print(f"RRF model (depth={11:f}, n_estimator={400:f}):")
         print(f"  RMSE: {rmse}")
