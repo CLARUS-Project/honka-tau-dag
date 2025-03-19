@@ -36,7 +36,7 @@ def model_training(data: Dict[str, Any]):
     # ADD YOUR CODE HERE: READ INPUT DATA
     # ADD YOUR CODE HERE: TRAIN THE MODEL
     # ADD YOUR CODE HERE: DO NOT FORGET TO TRACK THE MODEL TRAINING
-    inp_len = len(data["dataset1_x_train"][0])
+    # inp_len = len(data["dataset1_x_train"][0])
     #inp_len_y = len(data["dataset1_y_train"][0])
     #x_train = np.array(data["dataset1_x_train"])
     #x_train = x_train.reshape(-1, 1, inp_len)
@@ -70,14 +70,14 @@ def model_training(data: Dict[str, Any]):
         time.sleep(10)
         mlflow.set_experiment(config.MLFLOW_EXPERIMENT)
     with mlflow.start_run(run_name="RFRModel"):
-        regr = RandomForestRegressor(max_depth=7, random_state=0,n_estimators=50)
+        regr = RandomForestRegressor(max_depth=11, random_state=0,n_estimators=400)
         regr.fit(x_train, y_train)
 
         pred_values = regr.predict(x_test)
 
         (rmse, mae, r2) = utils.eval_metrics_2(y_test, pred_values)
 
-        print(f"RRF model (depth={7:f}, n_estimator={50:f}):")
+        print(f"RRF model (depth={11:f}, n_estimator={400:f}):")
         print(f"  RMSE: {rmse}")
         print(f"  MAE: {mae}")
         print(f"  R2: {r2}")

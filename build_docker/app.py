@@ -15,27 +15,24 @@ with open(model_path, "rb") as model_file:
 
 # Definir el esquema de entrada para las predicciones
 class PredictionInput(BaseModel):
-    weekday: float
-    source_tag: float
-    mat_tag: float
-    month: float
-    day: float
-    hour: float
-    minute: float
-    week_no: float
-
-
+    SH: float
+    Category: float
+    Day: float
+    Month: float
+    Weekday: float
+    Hour: float
+    Minute: float
 @app.post("/predict")
 def predict(input_data: PredictionInput):
     # Convertir los datos de entrada a un array NumPy
-    input_values = np.array([[input_data.weekday,
-                              input_data.source_tag,
-                              input_data.mat_tag,
-                              input_data.month,
-                              input_data.day,
-                              input_data.hour,
-                              input_data.minute,
-                              input_data.week_no]])
+    input_values = np.array([input_data.SH,
+                              input_data.Category,
+                              input_data.Day,
+                              input_data.Month,
+                              input_data.Weekday,
+                              input_data.Hour,
+                              input_data.Minute,
+                              ]).reshape(1,-1)
 
     # Realizar la predicción
     prediction = model.predict(input_values)[0]
