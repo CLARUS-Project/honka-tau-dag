@@ -57,7 +57,7 @@ def read_data() -> pd.DataFrame:
             print("get existing data")
             response = ids_agent_client.get_dataset(config.MLFLOW_EXPERIMENT)
             data = StringIO(response)
-            df = pd.read_csv(data, delimiter=';', quotechar='"')
+            df = pd.read_csv(data, delimiter=',', quotechar='"')
             return df
             #return None
 
@@ -66,7 +66,7 @@ def read_data() -> pd.DataFrame:
             print("dataset updated, get data")
             response=ids_agent_client.get_dataset(config.MLFLOW_EXPERIMENT)
             data = StringIO(response)
-            df = pd.read_csv(data, delimiter=';', quotechar='"')
+            df = pd.read_csv(data, delimiter=',', quotechar='"')
             return df
 
        
