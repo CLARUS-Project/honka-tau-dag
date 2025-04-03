@@ -51,7 +51,7 @@ def read_data() -> pd.DataFrame:
             df = pd.read_csv(data, delimiter=';', quotechar='"')
             return df
         except:"""
-        resp= ids_agent_client.get_asset_from_ids(config.MLFLOW_EXPERIMENT,connectorIP=IP_addr, connectorPort="3040") #8086
+        resp= ids_agent_client.get_asset_from_ids(config.MLFLOW_EXPERIMENT,connectorIP=IP_addr, connectorPort="8086") #8086
         if resp == False:
             print("unable to connect through ids, fetch previously saved ds")
             print("get existing data")
