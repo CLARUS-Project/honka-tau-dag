@@ -44,25 +44,30 @@ def read_data() -> pd.DataFrame:
         ids_agent_client = IDSAgentClient()
         # #Start transfer dataset
         #print("connecting to",IP_addr)
-        try:
+        """try:
             print("get existing data")
             response = ids_agent_client.get_dataset(config.MLFLOW_EXPERIMENT)
             data = StringIO(response)
             df = pd.read_csv(data, delimiter=';', quotechar='"')
             return df
-        except:
-            resp= ids_agent_client.get_asset_from_ids(config.MLFLOW_EXPERIMENT,connectorIP=IP_addr, connectorPort="8086")
-            if resp == False:
-                print("unable to connect")
-                return None
+        except:"""
+        resp= ids_agent_client.get_asset_from_ids(config.MLFLOW_EXPERIMENT,connectorIP=IP_addr, connectorPort="8086") #8086
+        if resp == False:
+            print("unable to connect through ids, fetch previously saved ds")
+            print("get existing data")
+            response = ids_agent_client.get_dataset(config.MLFLOW_EXPERIMENT)
+            data = StringIO(response)
+            df = pd.read_csv(data, delimiter=',', quotechar='"')
+            return df
+            #return None
 
-            else:
-                #Get dataset from agent volume
-                print("connected, get data")
-                response=ids_agent_client.get_dataset(config.MLFLOW_EXPERIMENT)
-                data = StringIO(response)
-                df = pd.read_csv(data, delimiter=';', quotechar='"')
-                return df
+        else:
+            #Get dataset from agent volume
+            print("dataset updated, get data")
+            response=ids_agent_client.get_dataset(config.MLFLOW_EXPERIMENT)
+            data = StringIO(response)
+            df = pd.read_csv(data, delimiter=',', quotechar='"')
+            return df
 
        
     

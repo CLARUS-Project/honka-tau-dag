@@ -11,7 +11,7 @@ from io import StringIO
 class IDSAgentClient:
     def __init__(self):
         pass
-        
+
     def get(self, url: str,timeout:int) -> Optional[requests.Response]:
         """_summary_
 
@@ -23,7 +23,7 @@ class IDSAgentClient:
             Optional[requests.Response]: _description_
         """
         try:
-          
+
             ret = requests.get(url, verify= False, timeout=timeout)
             """  logger.debug("GET returned {}".format(ret)) """
             return ret
@@ -32,7 +32,7 @@ class IDSAgentClient:
                 "Request error {} on GET REQUEST to {}".format(type(e).__name__, url)
             )
             return None
-        
+
     def get_asset_from_ids_using_minio(self, expId:str, connectorIP:str,minioEndpoint:str,minioUser:str,minioPass:str) -> bool:
         """_summary_
 
@@ -60,13 +60,13 @@ class IDSAgentClient:
             #     # Download asset to shared folder (connector datalake)
             #     minio_path =expId + "/dataset.csv"
             #     dest_path = "dataset.csv"
-            #     client.fget_object("dataset", minio_path, dest_path) 
+            #     client.fget_object("dataset", minio_path, dest_path)
                 return True
-            
+
         except Exception as e:
-           
+
             return False
-        
+
     def get_asset_from_ids(self, expId:str, connectorIP:str, connectorPort: Optional[str] =None) -> bool:
         """_summary_
 
@@ -79,7 +79,7 @@ class IDSAgentClient:
         """
         try:
             #Query connector consumer to get dataset artifact from connector provider
-            if connectorPort is None:            
+            if connectorPort is None:
                 url = "http://34.250.205.215:8082/api/v2/consumer/asset?exp_id="+expId+"&asset_type=dataset&provider_ip="+connectorIP
             else:
                 url = "http://34.250.205.215:8082/api/v2/consumer/asset?exp_id="+expId+"&asset_type=dataset&provider_ip="+connectorIP+"&provider_port="+connectorPort
@@ -90,12 +90,12 @@ class IDSAgentClient:
                 return False
             else:
                 return True
-            
+
         except Exception as e:
-           
-            return False        
-        
-    def get_dataset(self, expId:str):
+
+            return False
+
+    def get_dataset(self, expId: str):
 
         """_summary_
 
@@ -103,25 +103,19 @@ class IDSAgentClient:
             _type_: _description_
         """
         try:
-            #Query agent to get dataset saved in volume 
+            # Query agent to get dataset saved in volume
+            #url = "http://34.250.205.215:8082/api/v3/asset?exp_id=" + expId + "&asset_type=dataset"
             url = "http://34.250.205.215:8082/api/v2/dataset?exp_id="+expId
-            #url = "http://localhost:8082/api/v2/dataset?exp_id="+expId
-            #url = "http://34.250.205.215:8082/api/v2/consumer/asset?exp_id=" + expId + "&asset_type=dataset&provider_ip=" + connectorIP + "&provider_port=" + connectorPort
-            #url = "http://34.250.205.215:8082/api/v2/dataset?exp_id=" + expId + "&asset_type=dataset&provider_ip=" + connectorIP + "&provider_port=" + connectorPort
-            response = self.get(url,120)
+            response = self.get(url, 120)
 
-            #Check operation result
+            # Check operation result
             if response is None or response.status_code != 200:
-                print("data retrieve failed")
                 return ""
             else:
-
                 resp = response.json()
-                print("retrieved data",resp)
-                print("retrieved data end")
                 data = resp["message"]
                 return data
-            
+
         except Exception as e:
-            print("error", e)
-            return False
+
+            return False        
