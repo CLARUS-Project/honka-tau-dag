@@ -165,6 +165,37 @@ def filling_time_training_dag():
 
     @task.kubernetes(
         image='clarusproject/dag-image:1.0.0-slim',
+        name='model_training_etree_task',
+        task_id='model_training_etree_task',
+        namespace='airflow',
+        get_logs=True,
+        init_containers=[init_container],
+        volumes=[volume],
+        volume_mounts=[volume_mount],
+        env_vars=env_vars
+
+    )
+    def model_training_task_et_v2(read_id=None):
+        import sys
+        import redis
+        import pickle
+
+        sys.path.insert(1, '/git/honka-tau-dag/src/filling_time_pred_src/')
+        from Models.model_training_extra_trees_v2 import model_training_et
+
+        redis_client = redis.StrictRedis(
+            host='redis-headless.redis.svc.cluster.local',
+            port=6379,  # El puerto por defecto de Redis
+            password='pass'
+        )
+
+        data = redis_client.get('data-' + read_id)
+        res = pickle.loads(data)
+
+        return model_training_et(res)
+
+    @task.kubernetes(
+        image='clarusproject/dag-image:1.0.0-slim',
         name='select_best_model',
         task_id='select_best_model',
         namespace='airflow',
