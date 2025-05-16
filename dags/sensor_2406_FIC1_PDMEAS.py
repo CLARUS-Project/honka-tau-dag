@@ -238,7 +238,7 @@ def sensor_2406_FIC1_PDMEAS():
         MODIFY WHAT YOU WANT
         """
         path = '/git/honka-tau-dag/build_docker'
-        endpoint = 'registry-docker-registry.registry.svc.cluster.local:5001/honka_filling_durration:ids'
+        endpoint = 'registry-docker-registry.registry.svc.cluster.local:5001/honka_2406_FIC1_PDMEAS:ids'
 
 
         def download_artifacts(run_id, path):
