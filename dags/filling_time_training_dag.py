@@ -28,7 +28,7 @@ from airflow.models import Variable
     catchup=False,
     tags=['demonstration', 'filling_time'],
 )
-def sensor_2406_FIC1_PDMEAS():
+def filling_time_training_dag():
 
     env_vars={
         "POSTGRES_USERNAME": Variable.get("POSTGRES_USERNAME"),
@@ -59,7 +59,7 @@ def sensor_2406_FIC1_PDMEAS():
     init_container = k8s.V1Container(
         name="git-clone",
         image="alpine/git:latest",
-        command=["sh", "-c", "mkdir -p /git && cd /git && git clone -b 2406_FIC1_PDMEAS --single-branch https://github.com/CLARUS-Project/honka-tau-dag.git"],
+        command=["sh", "-c", "mkdir -p /git && cd /git && git clone -b main --single-branch https://github.com/CLARUS-Project/honka-tau-dag.git"],
         volume_mounts=init_container_volume_mounts
     )
 
@@ -238,7 +238,7 @@ def sensor_2406_FIC1_PDMEAS():
         MODIFY WHAT YOU WANT
         """
         path = '/git/honka-tau-dag/build_docker'
-        endpoint = 'registry-docker-registry.registry.svc.cluster.local:5001/honka_2406_FIC1_PDMEAS:ids'
+        endpoint = 'registry-docker-registry.registry.svc.cluster.local:5001/honka_filling_durration:ids'
 
 
         def download_artifacts(run_id, path):
@@ -304,4 +304,4 @@ def sensor_2406_FIC1_PDMEAS():
     processing_result >> [model_training_result_rf, model_training_result_et] >> select_best_model_result >> [register_experiment_result, build_inference_result]
 
 # Call the DAG
-sensor_2406_FIC1_PDMEAS()
+filling_time_training_dag()
